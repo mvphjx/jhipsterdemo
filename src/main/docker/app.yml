@@ -1,0 +1,42 @@
+version: '2'
+services:
+  jhipsterdemo-app:
+    image: jhipsterdemo
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=prod,swagger
+      - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://jhipsterdemo-mysql:3306/jhipsterdemo?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - JHIPSTER_CACHE_REDIS_SERVER=redis://jhipsterdemo-redis:6379
+      - JHIPSTER_CACHE_REDIS_CLUSTER=false
+      # - JHIPSTER_CACHE_REDIS_SERVER=redis://jhipsterdemo-redis:6379
+      # - JHIPSTER_CACHE_REDIS_CLUSTER=true
+      - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
+      - SPRING_DATA_JEST_URI=http://jhipsterdemo-elasticsearch:9200
+      - SPRING_ELASTICSEARCH_REST_URIS=http://jhipsterdemo-elasticsearch:9200
+      - KAFKA_BOOTSTRAPSERVERS=kafka:9092
+    ports:
+      - 8080:8080
+  jhipsterdemo-mysql:
+    extends:
+      file: mysql.yml
+      service: jhipsterdemo-mysql
+  jhipsterdemo-redis:
+    extends:
+      file: redis.yml
+      service: jhipsterdemo-redis
+  jhipsterdemo-elasticsearch:
+    extends:
+      file: elasticsearch.yml
+      service: jhipsterdemo-elasticsearch
+  kafka:
+    extends:
+      file: kafka.yml
+      service: kafka
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+  zookeeper:
+    extends:
+      file: kafka.yml
+      service: zookeeper
